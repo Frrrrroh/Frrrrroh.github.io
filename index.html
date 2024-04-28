@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GPS Location</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #edf2ee;
+            margin: 40px;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #0f0f0f;
+        }
+        #mapid {
+            height: 350px; /* Set the height of the map */
+            width: 103%;
+        }
+        #location-info {
+            margin-top: 10px;
+            background-color: #b5ed87;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #0f0f0f;
+            text-align: center;
+        }
+        #location-info h3 {
+            margin-top: 20px;
+            color: #111111;
+        }
+        #location-info {
+            margin-bottom: 30px;
+            color: #070707; /* Warna teks yang lebih mudah dibaca */
+        }
+        table {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GPS Location</h1>
+    <h2>Tugas Kuliah </h2>
+    <table>
+        <tr>
+            <td>Nama MK </td>
+            <td>:Kartografi dan Geospasial</td>
+        </tr>
+        <tr>
+            <td>Prodi </td>
+            <td>:D4 SIKC</td>
+        </tr>
+        <tr>
+            <td>Kampus </td>
+            <td>:Politeknik Negeri Banjarmasin</td>
+        </tr>
+        <tr>
+            <td>Dosen Pengampu </td>
+            <td>:Agus SBN</td>
+        </tr>
+        <tr>
+            <td>Nama </td>
+            <td>:Nur Maghfiroh Faizah</td>
+        </tr>
+        <tr>
+            <td>NIM </td>
+            <td>:C050422015</td>
+        </tr>
+        <tr>
+            <td>Kelas </td>
+            <td>:SIKC 4A</td>
+        </tr>
+        <tr>
+            <td>Tanggal </td>
+            <td>:23 April 2024</td>
+        </tr>
+    </table>
+    <ul id="location-info">
+        <h2>Posisi Saat Ini:</h2>
+        <h2 id="latitude">Latitude: Memuat...</h2>
+        <h2 id="longitude">Longitude: Memuat...</h2>
+        <h3 id="address">Address: Memuat...</h3>  
+    </ul>
+    <div id="mapid"></div>
+    <p class="mb-0">Firoh© 2024</p>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var latitudeElement = document.getElementById('latitude');
+            var longitudeElement = document.getElementById('longitude');
+            var addressElement = document.getElementById('address');
+            
+            var map = L.map('mapid');
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+
+                    map.setView([lat, lon], 15);
+                    L.marker([lat, lon]).addTo(map);
+
+                    latitudeElement.textContent = 'Latitude: ' + lat;
+                    longitudeElement.textContent = 'Longitude: ' + lon;
+
+                    var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon;
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            var address = data.display_name;
+                            addressElement.textContent = 'Alamat: ' + address;
+                        })
+                        .catch(error => {
+                            console.log('Error:', error);
+                            addressElement.textContent = 'Alamat: Tidak dapat ditemukan';
+                        });
+                });
+            } else {
+                latitudeElement.textContent = 'Geolocation tidak didukung oleh browser ini.';
+                longitudeElement.textContent = 'Geolocation tidak didukung oleh browser ini.';
+                addressElement.textContent = 'Geolocation tidak didukung oleh browser ini.';
+            }
+        });
+    </script>
+</body>
+</html>
